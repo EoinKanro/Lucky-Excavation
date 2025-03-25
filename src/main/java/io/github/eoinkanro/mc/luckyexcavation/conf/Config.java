@@ -1,10 +1,11 @@
 package io.github.eoinkanro.mc.luckyexcavation.conf;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -18,6 +19,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Config {
 
+    public static final String NAMESPACE_SEPARATOR = ":";
+
     public static int MIN_CHANCE = 0;
     public static int MAX_CHANCE = 1000;
 
@@ -28,22 +31,22 @@ public class Config {
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    private static final ModConfigSpec.IntValue DROP_CHANCE = BUILDER
+    static final ModConfigSpec.IntValue DROP_CHANCE = BUILDER
         .comment("Drop chance during excavation")
         .translation("Drop chance")
         .defineInRange("dropChance", 20, MIN_CHANCE, MAX_CHANCE);
 
-    private static final ModConfigSpec.IntValue DROP_CHANCE_MULTIPLAYER = BUILDER
+    static final ModConfigSpec.IntValue DROP_CHANCE_MULTIPLAYER = BUILDER
         .comment("Max number of drop items. So on lucky event it will spawn random count of items from 1 to the number")
         .translation("Drop chance multiplayer")
         .defineInRange("dropChanceMultiplayer", MIN_CHANCE_MULTIPLAYER, MIN_CHANCE_MULTIPLAYER, MAX_CHANCE_MULTIPLAYER);
 
-    private static final ModConfigSpec.BooleanValue DROP_ENABLE_IN_CREATIVE = BUILDER
+    static final ModConfigSpec.BooleanValue DROP_ENABLE_IN_CREATIVE = BUILDER
         .comment("Will mod work in creative")
         .translation("Enable in creative")
         .define("dropEnableInCreative", false);
 
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_TAGS = BUILDER
+    static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_TAGS = BUILDER
         .comment("List of blocks' tags lucky items will drop from on destroying")
         .translation("Excavation block tags")
         .defineListAllowEmpty("excavationBlockTags",
@@ -51,14 +54,14 @@ public class Config {
                 getNamespaceAndName(BlockTags.BASE_STONE_NETHER)),
             __ -> true);
 
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_NAMES = BUILDER
+    static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_NAMES = BUILDER
         .comment("List of blocks' names lucky items will drop from on destroying")
         .translation("Excavation block names")
         .defineListAllowEmpty("excavationBlockNames",
             List.of(),
             __ -> true);
 
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> DROP_NAMES = BUILDER
+    static final ModConfigSpec.ConfigValue<List<? extends String>> DROP_NAMES = BUILDER
         .comment("List of lucky items' names that will drop from blocks on destroying")
         .translation("Lucky item names")
         .defineListAllowEmpty("dropNames",
@@ -72,12 +75,12 @@ public class Config {
                 getNamespaceAndName(Items.LAPIS_LAZULI)),
             __ -> true);
 
-    private static final ModConfigSpec.ConfigValue<String> LUCKY_MESSAGE = BUILDER
+    static final ModConfigSpec.ConfigValue<String> LUCKY_MESSAGE = BUILDER
         .comment("Message when player gets a lucky item")
         .translation("Chat notification")
         .define("luckyMessage", "You've found something. Lucky you!");
 
-    private static final ModConfigSpec.BooleanValue LUCKY_MESSAGE_ENABLE = BUILDER
+    static final ModConfigSpec.BooleanValue LUCKY_MESSAGE_ENABLE = BUILDER
         .comment("Will the lucky message appear")
         .translation("Enable chat notifications")
         .define("luckyMessageEnable", true);
@@ -117,35 +120,50 @@ public class Config {
         luckyMessage = LUCKY_MESSAGE.get();
         luckyMessageEnable = LUCKY_MESSAGE_ENABLE.get();
 
+        validateResourceLocations(BuiltInRegistries.BLOCK, excavationBlockNames);
+        validateResourceLocations(BuiltInRegistries.ITEM, excavationBlockNames);
+
         LOGGER.info("Someone is going to be lucky ;)");
     }
 
     private static Set<TagKey<Block>> stringsToTags(List<? extends String> strings) {
-        return Optional.ofNullable(strings)
-            .orElse(Collections.emptyList())
+        return parseLocations(strings)
             .stream()
-            .map(ResourceLocation::parse)
             .map(BlockTags::create)
             .collect(Collectors.toSet());
     }
 
     private static Set<ResourceLocation> stringsToLocations(List<? extends String> strings) {
-        return Optional.ofNullable(strings)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(ResourceLocation::parse)
-            .collect(Collectors.toSet());
+        return new HashSet<>(parseLocations(strings));
     }
 
     private static List<Item> stringsToItems(List<? extends String> strings) {
-        return Optional.ofNullable(strings)
-            .orElse(Collections.emptyList())
+        return parseLocations(strings)
             .stream()
-            .map(ResourceLocation::parse)
             .map(BuiltInRegistries.ITEM::get)
             .collect(Collectors.toSet())
             .stream()
             .toList();
+    }
+
+    private static List<ResourceLocation> parseLocations(List<? extends String> strings) {
+        List<ResourceLocation> result = new ArrayList<>();
+        for (String string : strings) {
+            if (!string.contains(NAMESPACE_SEPARATOR)) {
+                LOGGER.warn("Wrong namespace: {}, skipping", string);
+                continue;
+            }
+            result.add(ResourceLocation.tryParse(string));
+        }
+        return result;
+    }
+
+    static void validateResourceLocations(DefaultedRegistry<?> registry, Iterable<ResourceLocation> locations) {
+        for (ResourceLocation element : locations) {
+            if (!registry.containsKey(element)) {
+                LOGGER.warn("Unknown block: {}", element);
+            }
+        }
     }
 
 }
