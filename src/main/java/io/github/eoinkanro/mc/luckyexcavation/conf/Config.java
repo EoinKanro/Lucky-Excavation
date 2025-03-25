@@ -21,6 +21,9 @@ public class Config {
     public static int MIN_CHANCE = 0;
     public static int MAX_CHANCE = 1000;
 
+    public static int MIN_CHANCE_MULTIPLAYER = 1;
+    public static int MAX_CHANCE_MULTIPLAYER = 64;
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -28,6 +31,14 @@ public class Config {
     private static final ModConfigSpec.IntValue DROP_CHANCE = BUILDER
         .comment("Drop chance during excavation")
         .defineInRange("dropChance", 20, MIN_CHANCE, MAX_CHANCE);
+
+    private static final ModConfigSpec.IntValue DROP_CHANCE_MULTIPLAYER = BUILDER
+        .comment("Max number of drop items. So on lucky event it will spawn random count of items from 1 to the number")
+        .defineInRange("dropChanceMultiplayer", MIN_CHANCE_MULTIPLAYER, MIN_CHANCE_MULTIPLAYER, MAX_CHANCE_MULTIPLAYER);
+
+    private static final ModConfigSpec.BooleanValue DROP_ENABLE_IN_CREATIVE = BUILDER
+        .comment("Will drop chance work in creative")
+        .define("dropEnableInCreative", false);
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_TAGS = BUILDER
         .comment("List of blocks' tags lucky items will drop from on destroying.")
@@ -66,9 +77,13 @@ public class Config {
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     public static int dropChance;
+    public static int dropChanceMultiplayer;
+    public static boolean dropEnableInCreative;
+
     public static Set<TagKey<Block>> excavationBlockTags;
     public static Set<ResourceLocation> excavationBlockNames;
     public static List<Item> dropNames;
+
     public static String luckyMessage;
     public static boolean luckyMessageEnable;
 
@@ -84,6 +99,8 @@ public class Config {
         LOGGER.info("Configuring Lucky Excavation...");
 
         dropChance = DROP_CHANCE.get();
+        dropChanceMultiplayer = DROP_CHANCE_MULTIPLAYER.get();
+        dropEnableInCreative = DROP_ENABLE_IN_CREATIVE.get();
 
         excavationBlockTags = stringsToTags(EXCAVATION_BLOCK_TAGS.get());
         excavationBlockNames = stringsToLocations(EXCAVATION_BLOCK_NAMES.get());
@@ -91,6 +108,7 @@ public class Config {
 
         luckyMessage = LUCKY_MESSAGE.get();
         luckyMessageEnable = LUCKY_MESSAGE_ENABLE.get();
+
         LOGGER.info("Someone is going to be lucky ;)");
     }
 

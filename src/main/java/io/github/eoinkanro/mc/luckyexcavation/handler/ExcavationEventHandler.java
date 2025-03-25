@@ -11,7 +11,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -31,6 +30,10 @@ public class ExcavationEventHandler {
       return;
     }
 
+    if (!Config.dropEnableInCreative && event.getPlayer().isCreative()) {
+      return;
+    }
+
     if (!isLucky()) {
       return;
     }
@@ -45,20 +48,20 @@ public class ExcavationEventHandler {
       return;
     }
 
-    Item luckyItem = Config.dropNames.get(ThreadLocalRandom.current().nextInt(0, Config.dropNames.size()));
+    Item luckyItem = Config.dropNames.get(getRandom(0, Config.dropNames.size()));
 
     BlockPos blockPos = event.getPos();
-    ItemEntity mineralItemEntity = new ItemEntity(level, blockPos.getX()+0.5, blockPos.getY()+0.5, blockPos.getZ()+0.5, new ItemStack(luckyItem, 1));
+    ItemStack itemStack = new ItemStack(luckyItem, getItemCount());
+    ItemEntity mineralItemEntity = new ItemEntity(level, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, itemStack);
     level.addFreshEntity(mineralItemEntity);
 
     if (Config.luckyMessageEnable && Config.luckyMessage != null && !Config.luckyMessage.isBlank()) {
-      Player player = event.getPlayer();
-      player.sendSystemMessage(createLuckyMessage());
+      event.getPlayer().sendSystemMessage(createLuckyMessage());
     }
   }
 
   private static boolean isLucky() {
-    int random = ThreadLocalRandom.current().nextInt(Config.MIN_CHANCE, Config.MAX_CHANCE + 1);
+    int random = getRandom(Config.MIN_CHANCE, Config.MAX_CHANCE + 1);
     return random < Config.dropChance;
   }
 
@@ -71,14 +74,15 @@ public class ExcavationEventHandler {
   }
 
   private static boolean isBlockMatches(Block destroyedBlock) {
-    return destroyedBlock != null && (isBlockMatchesTag(destroyedBlock) || isBlockMatchesName(destroyedBlock));
+    return destroyedBlock != null && (isBlockMatchesTag(destroyedBlock) || isBlockMatchesName(
+        destroyedBlock));
   }
 
   /**
    * Is block matches {@link Config#excavationBlockTags}
    */
   private static boolean isBlockMatchesTag(Block destroyedBlock) {
-    if (Config.excavationBlockTags == null) {
+    if (Config.excavationBlockTags == null || Config.excavationBlockTags.isEmpty()) {
       return false;
     }
 
@@ -99,7 +103,7 @@ public class ExcavationEventHandler {
    * Is block matches {@link Config#excavationBlockNames}
    */
   private static boolean isBlockMatchesName(Block destroyedBlock) {
-    if (Config.excavationBlockNames == null) {
+    if (Config.excavationBlockNames == null || Config.excavationBlockNames.isEmpty()) {
       return false;
     }
 
@@ -107,10 +111,21 @@ public class ExcavationEventHandler {
     return Config.excavationBlockNames.stream().anyMatch(resourceLocation::equals);
   }
 
+  private static int getItemCount() {
+    if (Config.dropChanceMultiplayer == Config.MIN_CHANCE_MULTIPLAYER) {
+      return Config.MIN_CHANCE_MULTIPLAYER;
+    }
+    return getRandom(Config.MIN_CHANCE_MULTIPLAYER, Config.dropChanceMultiplayer + 1);
+  }
+
   private static MutableComponent createLuckyMessage() {
     MutableComponent message = Component.literal(Config.luckyMessage);
     message.withStyle(ChatFormatting.GOLD);
     return message;
+  }
+
+  private static int getRandom(int min, int max) {
+    return ThreadLocalRandom.current().nextInt(min, max);
   }
 
 }
