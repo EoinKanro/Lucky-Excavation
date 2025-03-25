@@ -1,6 +1,7 @@
 package io.github.eoinkanro.mc.luckyexcavation.conf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -147,6 +148,10 @@ public class Config {
     }
 
     private static List<ResourceLocation> parseLocations(List<? extends String> strings) {
+        if (strings == null || strings.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<ResourceLocation> result = new ArrayList<>();
         for (String string : strings) {
             if (!string.contains(NAMESPACE_SEPARATOR)) {
