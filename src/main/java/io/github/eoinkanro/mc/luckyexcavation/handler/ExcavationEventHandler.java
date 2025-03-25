@@ -62,7 +62,7 @@ public class ExcavationEventHandler {
 
   private static boolean isLucky() {
     int random = getRandom(Config.MIN_CHANCE, Config.MAX_CHANCE + 1);
-    return random < Config.dropChance;
+    return random <= Config.dropChance;
   }
 
   private static Level getLevel(BlockEvent.BreakEvent event) {
