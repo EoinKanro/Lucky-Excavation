@@ -30,18 +30,22 @@ public class Config {
 
     private static final ModConfigSpec.IntValue DROP_CHANCE = BUILDER
         .comment("Drop chance during excavation")
+        .translation("Drop chance")
         .defineInRange("dropChance", 20, MIN_CHANCE, MAX_CHANCE);
 
     private static final ModConfigSpec.IntValue DROP_CHANCE_MULTIPLAYER = BUILDER
         .comment("Max number of drop items. So on lucky event it will spawn random count of items from 1 to the number")
+        .translation("Drop chance multiplayer")
         .defineInRange("dropChanceMultiplayer", MIN_CHANCE_MULTIPLAYER, MIN_CHANCE_MULTIPLAYER, MAX_CHANCE_MULTIPLAYER);
 
     private static final ModConfigSpec.BooleanValue DROP_ENABLE_IN_CREATIVE = BUILDER
-        .comment("Will drop chance work in creative")
+        .comment("Will mod work in creative")
+        .translation("Enable in creative")
         .define("dropEnableInCreative", false);
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_TAGS = BUILDER
-        .comment("List of blocks' tags lucky items will drop from on destroying.")
+        .comment("List of blocks' tags lucky items will drop from on destroying")
+        .translation("Excavation block tags")
         .defineListAllowEmpty("excavationBlockTags",
             List.of(getNamespaceAndName(BlockTags.BASE_STONE_OVERWORLD),
                 getNamespaceAndName(BlockTags.BASE_STONE_NETHER)),
@@ -49,12 +53,14 @@ public class Config {
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> EXCAVATION_BLOCK_NAMES = BUILDER
         .comment("List of blocks' names lucky items will drop from on destroying")
+        .translation("Excavation block names")
         .defineListAllowEmpty("excavationBlockNames",
             List.of(),
             __ -> true);
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> DROP_NAMES = BUILDER
         .comment("List of lucky items' names that will drop from blocks on destroying")
+        .translation("Lucky item names")
         .defineListAllowEmpty("dropNames",
             List.of(getNamespaceAndName(Items.DIAMOND),
                 getNamespaceAndName(Items.EMERALD),
@@ -68,10 +74,12 @@ public class Config {
 
     private static final ModConfigSpec.ConfigValue<String> LUCKY_MESSAGE = BUILDER
         .comment("Message when player gets a lucky item")
+        .translation("Chat notification")
         .define("luckyMessage", "You've found something. Lucky you!");
 
     private static final ModConfigSpec.BooleanValue LUCKY_MESSAGE_ENABLE = BUILDER
         .comment("Will the lucky message appear")
+        .translation("Enable chat notifications")
         .define("luckyMessageEnable", true);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
