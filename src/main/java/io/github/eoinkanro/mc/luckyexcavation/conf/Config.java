@@ -166,7 +166,7 @@ public class Config {
     static void validateResourceLocations(DefaultedRegistry<?> registry, Iterable<ResourceLocation> locations) {
         for (ResourceLocation element : locations) {
             if (!registry.containsKey(element)) {
-                LOGGER.warn("Unknown block: {}", element);
+                LOGGER.warn("Unknown element: {}", element);
             }
         }
     }
