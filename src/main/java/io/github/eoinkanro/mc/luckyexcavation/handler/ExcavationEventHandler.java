@@ -74,8 +74,7 @@ public class ExcavationEventHandler {
   }
 
   private static boolean isBlockMatches(Block destroyedBlock) {
-    return destroyedBlock != null && (isBlockMatchesTag(destroyedBlock) || isBlockMatchesName(
-        destroyedBlock));
+    return destroyedBlock != null && (isBlockMatchesTag(destroyedBlock) || isBlockMatchesName(destroyedBlock));
   }
 
   /**

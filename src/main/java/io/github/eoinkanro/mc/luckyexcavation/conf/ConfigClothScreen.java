@@ -73,8 +73,8 @@ public class ConfigClothScreen {
         .build());
 
     general.addEntry(entryBuilder.startBooleanToggle(
-        Component.literal(DROP_ENABLE_IN_CREATIVE.getSpec().getTranslationKey()),
-        DROP_ENABLE_IN_CREATIVE.get()
+            Component.literal(DROP_ENABLE_IN_CREATIVE.getSpec().getTranslationKey()),
+            DROP_ENABLE_IN_CREATIVE.get()
         ).setDefaultValue(DROP_ENABLE_IN_CREATIVE.getDefault())
         .setTooltip(Component.literal(DROP_ENABLE_IN_CREATIVE.getSpec().getComment()))
         .setSaveConsumer(DROP_ENABLE_IN_CREATIVE::set)
