@@ -8,6 +8,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
@@ -28,10 +29,12 @@ public class LuckyExcavation {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-        modContainer.registerExtensionPoint(
-            IConfigScreenFactory.class,
-            (minecraft, parent) -> ConfigClothScreen.createScreen(parent)
-        );
+        if (FMLEnvironment.dist.isClient()) {
+            modContainer.registerExtensionPoint(
+                IConfigScreenFactory.class,
+                (minecraft, parent) -> ConfigClothScreen.createScreen(parent)
+            );
+        }
     }
 
     private void onLoadComplete(FMLLoadCompleteEvent event) {
