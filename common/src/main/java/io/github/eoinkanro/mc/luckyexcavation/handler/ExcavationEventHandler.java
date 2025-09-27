@@ -3,7 +3,9 @@ package io.github.eoinkanro.mc.luckyexcavation.handler;
 import static io.github.eoinkanro.mc.luckyexcavation.conf.Constants.LOG;
 
 import io.github.eoinkanro.mc.luckyexcavation.conf.Config;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -22,19 +24,22 @@ import net.minecraft.world.level.block.Block;
 /**
  * Handles break event and calculates item drop
  */
+@RequiredArgsConstructor
 public class ExcavationEventHandler {
 
-  public static void handle(Player player, Block destoyedBlock, BlockPos blockPos, Level level) {
+  private final Config config;
+
+  public void handle(Player player, Block destoyedBlock, BlockPos blockPos, Level level) {
     if (player == null || destoyedBlock == null || blockPos == null || level == null) {
       LOG.warn("Can't handle excavation event. Not enough data");
       return;
     }
 
-    if (Config.dropNames == null || Config.dropNames.isEmpty()) {
+    if (config.getParsedDropNames() == null || config.getParsedDropNames().isEmpty()) {
       return;
     }
 
-    if (!Config.dropEnableInCreative && player.isCreative()) {
+    if (!config.getDropEnableInCreative().getCurrentValue() && player.isCreative()) {
       return;
     }
 
@@ -46,31 +51,33 @@ public class ExcavationEventHandler {
       return;
     }
 
-    Item luckyItem = Config.dropNames.get(getRandom(0, Config.dropNames.size()));
+    Item luckyItem = config.getParsedDropNames().get(getRandom(0, config.getParsedDropNames().size()));
 
     ItemStack itemStack = new ItemStack(luckyItem, getItemCount());
     ItemEntity mineralItemEntity = new ItemEntity(level, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, itemStack);
     level.addFreshEntity(mineralItemEntity);
 
-    if (Config.luckyMessageEnable && Config.luckyMessage != null && !Config.luckyMessage.isBlank()) {
+    if (config.getLuckyMessageEnable().getCurrentValue()
+        && config.getLuckyMessage().getCurrentValue() != null
+        && !config.getLuckyMessage().getCurrentValue().isBlank()) {
       player.sendSystemMessage(createLuckyMessage());
     }
   }
 
-  private static boolean isLucky() {
-    int random = getRandom(Config.MIN_CHANCE, Config.MAX_CHANCE + 1);
-    return random <= Config.dropChance;
+  private boolean isLucky() {
+    int random = getRandom(config.getDropChance().getMinValue(), config.getDropChance().getMaxValue() + 1);
+    return random <= config.getDropChance().getCurrentValue();
   }
 
-  private static boolean isBlockMatches(Block destroyedBlock) {
+  private boolean isBlockMatches(Block destroyedBlock) {
     return destroyedBlock != null && (isBlockMatchesTag(destroyedBlock) || isBlockMatchesName(destroyedBlock));
   }
 
   /**
-   * Is block matches {@link Config#excavationBlockTags}
+   * Is block matches {@link Config#parsedExcavationBlockTags}
    */
-  private static boolean isBlockMatchesTag(Block destroyedBlock) {
-    if (Config.excavationBlockTags == null || Config.excavationBlockTags.isEmpty()) {
+  private boolean isBlockMatchesTag(Block destroyedBlock) {
+    if (config.getParsedExcavationBlockTags() == null || config.getParsedExcavationBlockTags().isEmpty()) {
       return false;
     }
 
@@ -84,35 +91,35 @@ public class ExcavationEventHandler {
       return false;
     }
 
-    return Config.excavationBlockTags.stream().anyMatch(blockHolder::is);
+    return config.getParsedExcavationBlockTags().stream().anyMatch(blockHolder::is);
   }
 
   /**
-   * Is block matches {@link Config#excavationBlockNames}
+   * Is block matches {@link Config#parsedExcavationBlockNames}
    */
-  private static boolean isBlockMatchesName(Block destroyedBlock) {
-    if (Config.excavationBlockNames == null || Config.excavationBlockNames.isEmpty()) {
+  private boolean isBlockMatchesName(Block destroyedBlock) {
+    if (config.getParsedExcavationBlockNames() == null || config.getParsedExcavationBlockNames().isEmpty()) {
       return false;
     }
 
     ResourceLocation resourceLocation = BuiltInRegistries.BLOCK.getKey(destroyedBlock);
-    return Config.excavationBlockNames.stream().anyMatch(resourceLocation::equals);
+    return config.getParsedExcavationBlockNames().stream().anyMatch(resourceLocation::equals);
   }
 
-  private static int getItemCount() {
-    if (Config.dropChanceMultiplayer == Config.MIN_CHANCE_MULTIPLAYER) {
-      return Config.MIN_CHANCE_MULTIPLAYER;
+  private int getItemCount() {
+    if (Objects.equals(config.getDropChanceMultiplayer().getCurrentValue(), config.getDropChanceMultiplayer().getMinValue())) {
+      return config.getDropChanceMultiplayer().getMinValue();
     }
-    return getRandom(Config.MIN_CHANCE_MULTIPLAYER, Config.dropChanceMultiplayer + 1);
+    return getRandom(config.getDropChanceMultiplayer().getMinValue(), config.getDropChanceMultiplayer().getCurrentValue() + 1);
   }
 
-  private static MutableComponent createLuckyMessage() {
-    MutableComponent message = Component.literal(Config.luckyMessage);
+  private MutableComponent createLuckyMessage() {
+    MutableComponent message = Component.literal(config.getLuckyMessage().getCurrentValue());
     message.withStyle(ChatFormatting.GOLD);
     return message;
   }
 
-  private static int getRandom(int min, int max) {
+  private int getRandom(int min, int max) {
     return ThreadLocalRandom.current().nextInt(min, max);
   }
 
