@@ -1,7 +1,5 @@
 package io.github.eoinkanro.mc.luckyexcavation.handler;
 
-import static io.github.eoinkanro.mc.luckyexcavation.conf.Constants.LOG;
-
 import java.util.Optional;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,7 +9,6 @@ public class NeoExcavationEventHandler {
 
   @SubscribeEvent
   public static void handle(BlockEvent.BreakEvent event) {
-    LOG.warn("Lucky block");
     ExcavationEventHandler.handle(
         event.getPlayer(),
         Optional.ofNullable(event.getState())

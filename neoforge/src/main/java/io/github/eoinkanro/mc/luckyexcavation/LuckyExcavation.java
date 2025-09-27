@@ -20,7 +20,7 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(Constants.MOD_ID)
 public class LuckyExcavation {
 
-    private NeoConfigLoader configLoader;
+    private final NeoConfigLoader configLoader;
 
     public LuckyExcavation(IEventBus eventBus, ModContainer modContainer) {
         configLoader = new NeoConfigLoader();
@@ -30,6 +30,8 @@ public class LuckyExcavation {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, configLoader.SPEC);
+
+        //Config Menu
         if (FMLEnvironment.dist.isClient()) {
             modContainer.registerExtensionPoint(
                 IConfigScreenFactory.class,
