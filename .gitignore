@@ -22,3 +22,4 @@ build
 eclipse
 run
 runs
+**/src/main/resources/icon.png

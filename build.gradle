@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
 plugins {
     // see https://fabricmc.net/develop/ for new versions
     id 'fabric-loom' version '1.7-SNAPSHOT' apply false
@@ -28,5 +31,30 @@ subprojects {
         //it's safe for every loader.
         //'cloth-config' can't be used bcz of setSavingRunnable(class_471....)
         compileOnly "me.shedaniel.cloth:cloth-config-neoforge:${cloth_api_version}"
+    }
+
+    if (name == "common") return
+
+    tasks.register("copyIcon") {
+        doLast {
+            File iconFile = rootProject.file("icon.png")
+            if (!iconFile.exists()) {
+                throw new GradleException("icon.png not found in root project!")
+            }
+
+            File resourcesDir = file("src/main/resources")
+            if (!resourcesDir.exists()) {
+                resourcesDir.mkdirs()
+            }
+
+            File targetFile = new File(resourcesDir, "icon.png")
+            Files.copy(iconFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+            println "Copied icon.png to ${targetFile}"
+        }
+    }
+
+    tasks.matching { it.name == 'build' }.configureEach {
+        dependsOn(tasks.named("copyIcon"))
     }
 }
