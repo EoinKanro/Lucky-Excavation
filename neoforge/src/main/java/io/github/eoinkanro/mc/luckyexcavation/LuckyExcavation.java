@@ -41,6 +41,7 @@ public class LuckyExcavation {
     private void onLoadComplete(FMLLoadCompleteEvent event) {
         LOG.info("Lucky Excavation loading...");
         config.reload();
+        config.save();
 
         NeoForge.EVENT_BUS.register(new NeoExcavationEventHandler(config));
     }

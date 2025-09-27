@@ -41,6 +41,7 @@ public class LuckyExcavation {
     private void onLoadComplete(final FMLLoadCompleteEvent event) {
         Constants.LOG.info("Lucky Excavation loading...");
         config.reload();
+        config.save();
 
         // Register gameplay-related handlers
         MinecraftForge.EVENT_BUS.register(new ForgeExcavationEventHandler(config));

@@ -4,6 +4,7 @@ import static io.github.eoinkanro.mc.luckyexcavation.conf.Constants.LOG;
 
 import io.github.eoinkanro.mc.luckyexcavation.conf.Config;
 import io.github.eoinkanro.mc.luckyexcavation.handler.FabricExcavationEventHandler;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -17,7 +18,10 @@ public class LuckyExcavation implements ModInitializer {
     public void onInitialize() {
         CONFIG = new Config(FabricLoader.getInstance().getConfigDir());
 
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> loadConfig());
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientLifecycleEvents.CLIENT_STARTED.register(client -> loadConfig());
+        }
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             loadConfig();
             new FabricExcavationEventHandler(CONFIG).register();
@@ -27,5 +31,6 @@ public class LuckyExcavation implements ModInitializer {
     private void loadConfig() {
         LOG.info("Lucky Excavation loading...");
         CONFIG.reload();
+        CONFIG.save();
     }
 }
