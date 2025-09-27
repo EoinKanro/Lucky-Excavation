@@ -17,17 +17,18 @@ import net.minecraftforge.fml.loading.FMLPaths;
 public class LuckyExcavation {
 
     private final Config config;
-    private final ConfigClothScreen clothScreen;
+    private ConfigClothScreen clothScreen;
 
     public LuckyExcavation() {
         config = new Config(FMLPaths.CONFIGDIR.get());
-        clothScreen = new ConfigClothScreen(config);
 
         // Register the onLoadComplete method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onLoadComplete);
 
         //Config Menu
         if (FMLEnvironment.dist == Dist.CLIENT) {
+            clothScreen = new ConfigClothScreen(config);
+
             ModLoadingContext.get().registerExtensionPoint(
                 net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory(

@@ -19,17 +19,18 @@ import net.neoforged.neoforge.common.NeoForge;
 public class LuckyExcavation {
 
     private final Config config;
-    private final ConfigClothScreen clothScreen;
+    private ConfigClothScreen clothScreen;
 
     public LuckyExcavation(IEventBus eventBus, ModContainer modContainer) {
         config = new Config(FMLPaths.CONFIGDIR.get());
-        clothScreen = new ConfigClothScreen(config);
 
         // Register the onLoadComplete method for modloading
         eventBus.addListener(this::onLoadComplete);
 
         //Config Menu
         if (FMLEnvironment.dist.isClient()) {
+            clothScreen = new ConfigClothScreen(config);
+
             modContainer.registerExtensionPoint(
                 IConfigScreenFactory.class,
                 (minecraft, parent) -> clothScreen.createScreen(parent)
