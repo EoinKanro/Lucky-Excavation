@@ -31,14 +31,14 @@ side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId="cloth_config"
-type="required"
+mandatory = true
 versionRange="${cloth_api_version_range}"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
 modId="kanrommon"
-type="required"
+mandatory = true
 versionRange="${kanrommon_version_range}"
 ordering="NONE"
 side="BOTH"
