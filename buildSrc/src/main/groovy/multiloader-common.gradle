@@ -101,6 +101,7 @@ processResources {
             'credits'                      : credits,
             'java_version'                 : java_version,
             'cloth_api_version_range'      : cloth_api_version_range,
+            'kanrommon_version'            : kanrommon_version,
             'kanrommon_version_range'      : kanrommon_version_range,
             'project_url'                  : project_url,
             'project_issues_url'           : project_issues_url
