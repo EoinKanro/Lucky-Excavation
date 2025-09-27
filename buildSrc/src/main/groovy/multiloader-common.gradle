@@ -100,11 +100,13 @@ processResources {
             "forge_loader_version_range": forge_loader_version_range,
             'credits'                      : credits,
             'java_version'                 : java_version,
+            'cloth_api_version'            : cloth_api_version,
             'cloth_api_version_range'      : cloth_api_version_range,
             'kanrommon_version'            : kanrommon_version,
             'kanrommon_version_range'      : kanrommon_version_range,
             'project_url'                  : project_url,
-            'project_issues_url'           : project_issues_url
+            'project_issues_url'           : project_issues_url,
+            'modmenu_version'              : modmenu_version
     ]
 
     filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml']) {
