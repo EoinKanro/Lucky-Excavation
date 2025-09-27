@@ -9,10 +9,10 @@
     ],
     "contact": {
         "homepage": "${project_url}",
-        "sources": "${project_issues_url}"
+        "issues": "${project_issues_url}"
     },
     "license": "${license}",
-    "icon": "${mod_id}.png",
+    "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
@@ -25,9 +25,9 @@
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": "*",
-        "minecraft": ">=${minecraft_version}",
+        "minecraft": "${minecraft_fabric_version_range}",
         "java": ">=${java_version}",
-        "kanrommon": ">=${kanrommon_version}",
+        "kanrommon": "${kanrommon_fabric_version_range}",
         "cloth-config": ">=${cloth_api_version}",
         "modmenu": ">=${modmenu_version}"
     },
