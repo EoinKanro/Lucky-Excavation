@@ -1,3 +1,4 @@
+MOVED to https://gitlab.com/eoin.kanro/minecraft/Lucky-Excavation
 
 ### 💎 Break blocks, find treasures!
 
